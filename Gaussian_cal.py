@@ -3,6 +3,7 @@ import pandas as pd
 from numpy.random import randn
 import matplotlib.pyplot as plt
 from PCA import pca
+from PCA import show_pca
 
 xs = range(500)
 ys = randn(500) * 1.0 + 10.0
@@ -44,11 +45,12 @@ N_select = 10
 # set z_value as 0.
 points = np.array(points)
 points[:, 2] = 0.
-print('after setting z value as 0. , points size is: ')
-print(points.shape)
-print(points.shape[0], points.shape[1])
-print(points[0:2, :])
 eigen_values, eigen_vectors = pca(points)
+principal = eigen_vectors[:, -1]
+print("principal direction is:", principal)
+
+show_pca(points, principal)
+
 
 
 
