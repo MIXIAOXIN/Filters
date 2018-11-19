@@ -28,7 +28,7 @@ def pca(data):
 
 def show_pca(data, eigen_vector):
     data = np.array(data)
-    print(data[0 : 2, :])
+    # print(data[0 : 2, :])
     x = data[:, 0]
     y = data[:, 1]
     z = data[:, 2]
@@ -59,6 +59,58 @@ def show_pca(data, eigen_vector):
     # print('line_x:', line_x)
     # print('line_y', line_y)
 
-    plt.plot(line_x, line_y, c='red', alpha=1.0, label="principal")
+    plt.plot(line_x, line_y, c='red', alpha=1.0, label="normal")
     plt.legend()
     plt.show(fig)
+    return True
+
+
+def subsample_along_principal(data, principal, sampleN):
+    data = np.array(data)
+    data_center = np.mean(data, axis=0)
+    principal_vector = principal.reshape(3, 1)
+    data_center = data_center.reshape(1, 3)
+    vectors_OQ = data - data_center
+    data_proj_length = np.dot(vectors_OQ, principal_vector)
+    data_with_length = np.concatenate((data, data_proj_length), axis=1)
+
+    np.sort(data_with_length)
+    data_with_length = data_with_length[np.lexsort(data_with_length.T)]
+    data_with_length = data_with_length[0]
+
+    # Choice1: random selection
+    #sample_ids = np.random.randint(data_with_length.shape[0], size=sampleN)
+
+    # Choice2: ranged selection
+    sample_ids = np.arange(0, data_with_length.shape[0], step=data_with_length.shape[0]/sampleN, dtype=np.int)
+
+    last_id = np.array([data_with_length.shape[0] - 1])
+    sample_ids = np.append(sample_ids, last_id)
+    sampled_points = data_with_length[sample_ids, :]
+    sampled_points = sampled_points[np.lexsort(sampled_points.T)]
+    sampled_points = sampled_points[0]
+    sampled_points = sampled_points[:, 0:3]
+
+    return sampled_points
+
+
+def show_samples(data, sampled_data):
+    data = np.array(data)
+    sampled_data = np.array(sampled_data)
+
+    fig = plt.figure(1)
+    x_data = data[:, 0]
+    y_data = data[:, 1]
+    x_sampled_data = sampled_data[:, 0]
+    y_sampled_data = sampled_data[:, 1]
+    plt.scatter(x_data, y_data, c='green', alpha=0.1, marker='o', label="points")
+    plt.plot(x_sampled_data, y_sampled_data, c='red', alpha=1.0, label='sampled points')
+    plt.axis("equal")
+    plt.legend()
+    plt.show(fig)
+
+    return True
+
+
+
+

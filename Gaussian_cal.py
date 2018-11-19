@@ -4,15 +4,23 @@ from numpy.random import randn
 import matplotlib.pyplot as plt
 from PCA import pca
 from PCA import show_pca
+from PCA import subsample_along_principal
+from PCA import show_samples
 
-xs = range(500)
-ys = randn(500) * 1.0 + 10.0
+from curve_plot import plot_scatters
+from curve_plot import plot_1st_order_curve
+from curve_plot import plot_2nd_order_curve
+from curve_plot import plot_3rd_order_curve
+from curve_plot import plot_1_2_3_order_fitting_curve
 
-plt.plot(xs, ys)
-print('mean of the reading is: {:.3f}'.format(np.mean(ys)))
+# xs = range(500)
+# ys = randn(500) * 1.0 + 10.0
+#
+# plt.plot(xs, ys)
+# print('mean of the reading is: {:.3f}'.format(np.mean(ys)))
 
 # 1. import points
-points = pd.read_csv('/Users/mixiaoxin/Desktop/single_curb_points_cloud/curb_line1.txt', dtype=np.float64)
+points = pd.read_csv('/Users/mixiaoxin/Desktop/single_curb_points_cloud/curb_curve4.txt', dtype=np.float64)
 print('points size is: ')
 print(points.shape)
 
@@ -47,12 +55,21 @@ points = np.array(points)
 points[:, 2] = 0.
 eigen_values, eigen_vectors = pca(points)
 principal = eigen_vectors[:, -1]
-print("principal direction is:", principal)
+normal = eigen_vectors[:, -2]
+print("principal direction is:\n", principal)
+print('normal direction is\n', normal)
 
-show_pca(points, principal)
+#show_pca(points, normal)
 
+sampled_points = subsample_along_principal(points, principal, N_select)
+show_samples(points, sampled_points)
+figure_title = 'curve fitting'
+# plot_scatters(points, figure_title)
+# plot_1st_order_curve(points, figure_title)
+# plot_2nd_order_curve(points, figure_title)
+plot_3rd_order_curve(points, figure_title)
 
-
+plot_1_2_3_order_fitting_curve(points, figure_title)
 
 # 3. Control Points Calculation for 3rd order Bezier Curve
 
